@@ -1,9 +1,11 @@
 package com.godeltech.simplewebapp.controller;
 
+import com.godeltech.simplewebapp.dto.EmployeeDTO;
 import com.godeltech.simplewebapp.entity.Employee;
-import com.godeltech.simplewebapp.exception.InvalidArgumentException;
+import com.godeltech.simplewebapp.factory.EmployeeDTOFactory;
 import com.godeltech.simplewebapp.service.ServiceEmployeeImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,30 +17,47 @@ public class Controller {
     @Autowired
     ServiceEmployeeImpl serviceEmployee;
 
-    @GetMapping("/get-all")
+    @Autowired
+    EmployeeDTOFactory employeeDTOFactory;
+
+    @GetMapping
     public List<Employee> getAllEmployees() {
         return serviceEmployee.getAllEmployees();
     }
 
-    @GetMapping("/get-by-id")
-    public Employee getEmployee(@RequestParam(name = "id") Long id) throws InvalidArgumentException {
-        return serviceEmployee.getEmployee(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(employeeDTOFactory
+                .createEmployeeDTO(serviceEmployee
+                        .getEmployeeOrThrowNotFound(id)
+                )
+        );
     }
 
     @PostMapping
-    public Employee addEmployee(@RequestBody Employee employee) throws InvalidArgumentException {
-        return serviceEmployee.addEmployee(employee);
+    public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody Employee employee){
+        return ResponseEntity.ok(employeeDTOFactory
+                .createEmployeeDTO(
+                        serviceEmployee
+                                .addEmployee(employee)
+                )
+        );
+   }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable(name = "id") Long id, @RequestBody Employee employee) {
+        return ResponseEntity.ok(employeeDTOFactory
+                .createEmployeeDTO(serviceEmployee
+                        .updateEmployeeOrThrowNotFound(id, employee)
+                )
+        );
+
     }
 
-    @PutMapping
-    public Employee updateEmployee(@RequestParam(name = "id") Long id, @RequestBody Employee employee) throws InvalidArgumentException {
-        return serviceEmployee.updateEmployee(id, employee);
-    }
-
-    @DeleteMapping
-    public boolean deleteEmployee(@RequestParam(name = "id") Long id) throws InvalidArgumentException {
-        serviceEmployee.deleteEmployee(id);
-        return true;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> deleteEmployee(@PathVariable(name = "id") Long id) {
+        serviceEmployee.deleteEmployeeOrThrowNotFoundException(id);
+        return ResponseEntity.ok(true);
     }
 
 }

@@ -2,7 +2,7 @@ package com.godeltech.simplewebapp.service;
 
 import com.godeltech.simplewebapp.dao.DaoEmployee;
 import com.godeltech.simplewebapp.entity.Employee;
-import com.godeltech.simplewebapp.exception.InvalidArgumentException;
+import com.godeltech.simplewebapp.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,46 +21,46 @@ public class ServiceEmployeeImpl implements ServiceEmployee {
     }
 
     @Override
-    public Employee getEmployee(Long id) throws InvalidArgumentException {
-
-        Optional<Employee> optionalEmployee = daoEmployee.findById(id);
-        return optionalEmployee.orElseThrow(() -> new InvalidArgumentException("Employee with id " + id + " not found"));
+    public Employee getEmployeeOrThrowNotFound(Long id){
+        return daoEmployee
+                .findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException(String.format("Сотрудник с идентификатором \"%s\" не найден.", id))
+                );
     }
 
     @Override
-    public Employee updateEmployee(Long id, Employee employee) throws InvalidArgumentException {
+    public Employee updateEmployeeOrThrowNotFound(Long id, Employee employee) {
 
-        Optional<Employee> optionalEmployee = daoEmployee.findById(id);
+        Employee employee1 = daoEmployee
+                .findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException(String.format("Сотрудник с идентификатором \"%s\" не найден.", id))
+                );
 
-        if (!optionalEmployee.isPresent()) {
-            optionalEmployee.orElseThrow(() -> new InvalidArgumentException("Employee with id " + id + " not found"));
-        }
-
-        return optionalEmployee.get()
-                .setDateOfBirth(employee.getDateOfBirth())
-                .setDepartmentId(employee.getDepartmentId())
-                .setGender(employee.getGender())
-                .setFirstName(employee.getFirstName())
-                .setLastName(employee.getLastName());
+        return daoEmployee.save(employee1
+                    .setDateOfBirth(employee.getDateOfBirth())
+                    .setDepartmentId(employee.getDepartmentId())
+                    .setGender(employee.getGender())
+                    .setFirstName(employee.getFirstName())
+                    .setLastName(employee.getLastName()));
     }
 
     @Override
-    public void deleteEmployee(Long id) throws InvalidArgumentException {
+    public void deleteEmployeeOrThrowNotFoundException(Long id) {
 
-        Optional<Employee> optionalEmployee = daoEmployee.findById(id);
+        Employee employee = daoEmployee
+                .findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException(String.format("Сотрудник с идентификатором \"%s\" не найден.", id))
+                );
 
-        if (!optionalEmployee.isPresent()) {
-            optionalEmployee.orElseThrow(() -> new InvalidArgumentException("Employee with id " + id + " not found"));
-        }
-
-        optionalEmployee.get().setDeleted(true);
+        daoEmployee.delete(employee);
 
     }
 
     @Override
     public Employee addEmployee(Employee employee) {
-        Employee employee1 = daoEmployee.save(employee);
-        return employee1;
-        //        return daoEmployee.save(employee);
+        return daoEmployee.save(employee);
     }
 }
