@@ -7,12 +7,16 @@ import com.godeltech.simplewebapp.service.ServiceEmployeeImpl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Log4j2
 @RestController
+@Validated
 @RequestMapping("/api/employees")
 public class Controller {
 
@@ -29,7 +33,7 @@ public class Controller {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<EmployeeDTO> getEmployee(@NotNull @PathVariable(name = "id") Long id) {
         log.info(String.format("Вызов метода \"getEmployee\" по идентификатору \"%s\"", id));
         return ResponseEntity.ok(employeeDTOFactory
                 .createEmployeeDTO(serviceEmployee
@@ -39,7 +43,7 @@ public class Controller {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody Employee employee){
+    public ResponseEntity<EmployeeDTO> addEmployee(@Valid @RequestBody Employee employee){
         log.info(String.format("Вызов метода \"addEmployee\" для объекта \"%s\"", employee));
         return ResponseEntity.ok(employeeDTOFactory
                 .createEmployeeDTO(
@@ -50,7 +54,7 @@ public class Controller {
    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable(name = "id") Long id, @RequestBody Employee employee) {
+    public ResponseEntity<EmployeeDTO> updateEmployee(@NotNull @PathVariable(name = "id") Long id, @Valid @RequestBody Employee employee) {
         log.info(String.format("Вызов метода \"updateEmployee\" по идентификатору \"%s\"", id));
         return ResponseEntity.ok(employeeDTOFactory
                 .createEmployeeDTO(serviceEmployee
@@ -61,7 +65,7 @@ public class Controller {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteEmployee(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<Boolean> deleteEmployee(@NotNull @PathVariable(name = "id") Long id) {
         serviceEmployee.deleteEmployeeOrThrowNotFoundException(id);
         return ResponseEntity.ok(true);
     }

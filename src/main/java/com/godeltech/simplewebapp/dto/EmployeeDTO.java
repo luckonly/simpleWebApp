@@ -4,6 +4,7 @@ import com.godeltech.simplewebapp.entity.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Data
@@ -13,28 +14,22 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmployeeDTO {
 
-    @NonNull
     Long employeeId;
 
-    @NonNull
+    @NotBlank
     String firstName;
 
-    @NonNull
+    @NotBlank
     String lastName;
 
-    @NonNull
     Long departmentId;
 
-    @NonNull
     String jobTitle;
 
-    @NonNull
     Gender gender;
 
-    @NonNull
     LocalDate dateOfBirth;
 
-    @NonNull
     boolean deleted;
 
 }
