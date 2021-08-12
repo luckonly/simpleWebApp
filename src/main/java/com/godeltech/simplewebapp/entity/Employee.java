@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 
