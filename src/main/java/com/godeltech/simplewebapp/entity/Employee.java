@@ -10,8 +10,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "employees", schema = "simplewebapp")
-@Data
+@Table(name = "employee")
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
